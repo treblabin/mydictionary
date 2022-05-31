@@ -79,10 +79,7 @@ export default function reducer(state = initialState, action = {}) {
     case "word/UPDATE": {
       let temp_word_list = state.list;
       const obj = state.list.find((x) => +x.id === +action.word.id);
-      console.log(obj);
       const index = state.list.indexOf(obj);
-      console.log(temp_word_list);
-      console.log(index);
       temp_word_list[index].text = action.word.text;
       temp_word_list[index].pronunciation = action.word.pronunciation;
       temp_word_list[index].meaning = action.word.meaning;
