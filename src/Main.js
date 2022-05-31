@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { IconContext } from "react-icons";
-import { BiCheck, BiEdit, BiTrash, BiPlus } from "react-icons/bi";
+import { BiCheck, BiEdit, BiTrash, BiPlus, BiChevronUp } from "react-icons/bi";
 import { removeWord, checkWord } from "./redux/modules/word";
 
 const Main = (props) => {
@@ -82,6 +82,29 @@ const Main = (props) => {
           }}
         />
       </Link>
+      <button
+        style={{
+          display: "contents",
+          size: "24",
+        }}
+        onClick={() => {
+          window.scrollTo(0, 0);
+        }}
+      >
+        <BiChevronUp
+          style={{
+            background: "rgb(10, 112, 41)",
+            color: "white",
+            size: "42",
+            width: "30px",
+            height: "30px",
+            borderRadius: "30px",
+            position: "fixed",
+            bottom: "30",
+            left: "30",
+          }}
+        />
+      </button>
     </AppCover>
   );
 };
