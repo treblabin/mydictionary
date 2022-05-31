@@ -1,31 +1,73 @@
 import React from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
+import { updateWord } from "./redux/modules/word";
 
 const Edit = (props) => {
   const word_index = useParams().index;
+  const word_id = useParams().myid;
   const word_list = useSelector((state) => state.word.list);
+
+  const Navigate = useNavigate();
+
+  const textInput = React.useRef(null);
+  const pronunciationInput = React.useRef(null);
+  const meaningInput = React.useRef(null);
+  const exampleInput = React.useRef(null);
+  const translationInput = React.useRef(null);
+
+  const dispatch = useDispatch();
+
+  const editWordList = () => {
+    const myInput = {
+      id: word_id,
+      text: textInput.current.value,
+      pronunciation: pronunciationInput.current.value,
+      meaning: meaningInput.current.value,
+      example: exampleInput.current.value,
+      translation: translationInput.current.value,
+    };
+    dispatch(updateWord(myInput));
+    Navigate(`/`);
+  };
 
   return (
     <FullCover>
       <Title>단어 수정하기</Title>
       <InputCover>
         <ThisP>단어</ThisP>
-        <MyInput type="text" placeholder={word_list[word_index].text} />
+        <MyInput
+          type="text"
+          defaultValue={word_list[word_index].text}
+          ref={textInput}
+        />
         <ThisP>발음</ThisP>
         <MyInput
           type="text"
-          placeholder={word_list[word_index].pronunciation}
+          defaultValue={word_list[word_index].pronunciation}
+          ref={pronunciationInput}
         />
         <ThisP>뜻</ThisP>
-        <MyInput type="text" placeholder={word_list[word_index].meaning} />
+        <MyInput
+          type="text"
+          defaultValue={word_list[word_index].meaning}
+          ref={meaningInput}
+        />
         <ThisP>예문</ThisP>
-        <MyInput type="text" placeholder={word_list[word_index].example} />
+        <MyInput
+          type="text"
+          defaultValue={word_list[word_index].example}
+          ref={exampleInput}
+        />
         <ThisP>예문해석</ThisP>
-        <MyInput type="text" placeholder={word_list[word_index].translation} />
+        <MyInput
+          type="text"
+          defaultValue={word_list[word_index].translation}
+          ref={translationInput}
+        />
       </InputCover>
-      <InputButton>수정하기</InputButton>
+      <InputButton onClick={editWordList}>수정하기</InputButton>
     </FullCover>
   );
 };

@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createWord } from "./redux/modules/word";
 
 const Add = (props) => {
   const data = useSelector((state) => state.word.list);
+
+  const Navigate = useNavigate();
 
   const textInput = React.useRef(null);
   const pronunciationInput = React.useRef(null);
@@ -17,7 +19,7 @@ const Add = (props) => {
 
   const addWordList = () => {
     const myInput = {
-      id: data[data.length - 1].id + 1,
+      id: data.length === 0 ? 0 : data[data.length - 1].id + 1,
       text: textInput.current.value,
       pronunciation: pronunciationInput.current.value,
       meaning: meaningInput.current.value,
@@ -26,6 +28,7 @@ const Add = (props) => {
       check: false,
     };
     dispatch(createWord(myInput));
+    Navigate(`/`);
   };
 
   return (

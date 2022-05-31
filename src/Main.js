@@ -4,9 +4,10 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { IconContext } from "react-icons";
 import { BiCheck, BiEdit, BiTrash, BiPlus } from "react-icons/bi";
-import { removeWord } from "./redux/modules/word";
+import { removeWord, checkWord } from "./redux/modules/word";
 
 const Main = (props) => {
+  const [count, setCount] = React.useState(0);
   const data = useSelector((state) => state.word.list);
   const ReversedData = data.map((datas) => datas).reverse();
   console.log(ReversedData);
@@ -17,18 +18,29 @@ const Main = (props) => {
       <Cover>
         {ReversedData.map((n, i) => {
           return (
-            <MyCard key={n.id}>
+            <MyCard key={n.id} IsChecked={n.check}>
               <BtnCover>
                 <IconContext.Provider
                   value={{
-                    color: "rgb(10, 112, 41)",
+                    color: n.check === true ? "white" : "rgb(10, 112, 41)",
                     size: 24,
                     background: "transparent",
                   }}
                 >
-                  <BiCheck />
+                  <button
+                    style={{
+                      display: "contents",
+                    }}
+                  >
+                    <BiCheck
+                      onClick={() => {
+                        dispatch(checkWord(n.id));
+                        setCount(count + 1);
+                      }}
+                    />
+                  </button>
                   <Link
-                    to={`/edit/${ReversedData.length - (i + 1)}`}
+                    to={`/edit/${ReversedData.length - (i + 1)}/${n.id}`}
                     style={{
                       display: "contents",
                     }}
@@ -38,11 +50,13 @@ const Main = (props) => {
                   <BiTrash onClick={() => dispatch(removeWord(n.id))} />
                 </IconContext.Provider>
               </BtnCover>
-              <TextP>{n.text}</TextP>
-              <PronunciationP>[{n.pronunciation}]</PronunciationP>
-              <MeaningP>{n.meaning}</MeaningP>
-              <ExampleP>{n.example}</ExampleP>
-              <ExampleP>{n.translation}</ExampleP>
+              <TextP IsChecked={n.check}>{n.text}</TextP>
+              <PronunciationP IsChecked={n.check}>
+                [{n.pronunciation}]
+              </PronunciationP>
+              <MeaningP IsChecked={n.check}>{n.meaning}</MeaningP>
+              <ExampleP IsChecked={n.check}>{n.example}</ExampleP>
+              <ExampleP IsChecked={n.check}>{n.translation}</ExampleP>
             </MyCard>
           );
         })}
@@ -91,29 +105,39 @@ const MyCard = styled.article`
   padding: 20px;
   border: 2px solid rgb(10, 112, 41);
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: ${(props) =>
+    props.IsChecked ? "rgb(10, 112, 41)" : "rgb(255, 255, 255, 0.4)"};
+  @media screen and (max-width: 1000px) {
+    width: calc((100% - 120px) / 2);
+  }
+  @media screen and (max-width: 600px) {
+    width: calc(100% - 60px);
+  }
 `;
 
 const TextP = styled.p`
   font-weight: bold;
   font-size: 25px;
   margin: 0px;
+  color: ${(props) => (props.IsChecked ? "white" : "black")};
 `;
 
 const PronunciationP = styled.p`
   font-size: 18px;
   margin: 5px 0px;
+  color: ${(props) => (props.IsChecked ? "white" : "black")};
 `;
 
 const MeaningP = styled.p`
   font-size: 18px;
   margin: 0px;
+  color: ${(props) => (props.IsChecked ? "white" : "black")};
 `;
 
 const ExampleP = styled.p`
   font-size: 14px;
   margin: 5px 0px;
-  color: rgb(9, 132, 227);
+  color: ${(props) => (props.IsChecked ? "white" : "rgb(9, 132, 227)")};
 `;
 
 const BtnCover = styled.div`

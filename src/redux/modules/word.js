@@ -4,6 +4,7 @@
 const CREATE = "word/CREATE";
 const UPDATE = "word/UPDATE";
 const REMOVE = "word/REMOVE";
+const CHECK = "word/CHECK";
 
 const initialState = {
   list: [
@@ -50,6 +51,10 @@ export function removeWord(word_id) {
   return { type: REMOVE, word_id };
 }
 
+export function checkWord(word_id) {
+  return { type: CHECK, word_id };
+}
+
 // Reducer
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -61,6 +66,29 @@ export default function reducer(state = initialState, action = {}) {
       const new_word_list = state.list.filter((l) => {
         return l.id != action.word_id;
       });
+      return { list: new_word_list };
+    }
+    case "word/CHECK": {
+      let temp_word_list = state.list;
+      const obj = state.list.find((x) => x.id === action.word_id);
+      const index = state.list.indexOf(obj);
+      temp_word_list[index].check = !temp_word_list[index].check;
+      const new_word_list = temp_word_list;
+      return { list: new_word_list };
+    }
+    case "word/UPDATE": {
+      let temp_word_list = state.list;
+      const obj = state.list.find((x) => +x.id === +action.word.id);
+      console.log(obj);
+      const index = state.list.indexOf(obj);
+      console.log(temp_word_list);
+      console.log(index);
+      temp_word_list[index].text = action.word.text;
+      temp_word_list[index].pronunciation = action.word.pronunciation;
+      temp_word_list[index].meaning = action.word.meaning;
+      temp_word_list[index].example = action.word.example;
+      temp_word_list[index].translation = action.word.translation;
+      const new_word_list = temp_word_list;
       return { list: new_word_list };
     }
     // do reducer stuff
