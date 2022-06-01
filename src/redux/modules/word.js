@@ -1,44 +1,31 @@
 // word.js
-
+import { db } from "../../firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { async } from "@firebase/util";
 // Actions
+const LOAD = "word/LOAD";
 const CREATE = "word/CREATE";
 const UPDATE = "word/UPDATE";
 const REMOVE = "word/REMOVE";
 const CHECK = "word/CHECK";
 
 const initialState = {
-  list: [
-    {
-      id: 0,
-      text: "apple",
-      pronunciation: "aepl",
-      meaning: "사과",
-      example: "He ate the apple, stalk and all.",
-      translation: "그는 그 사과를 속심까지 다 먹었다.",
-      check: false,
-    },
-    {
-      id: 1,
-      text: "tree",
-      pronunciation: "tri",
-      meaning: "나무",
-      example: "The wind had snapped the tree in two.",
-      translation: "바람에 그 나무가 딱 하고 두 토막이 나 버렸던 것이다.",
-      check: false,
-    },
-    {
-      id: 2,
-      text: "twelve",
-      pronunciation: "twelv",
-      meaning: "열둘",
-      example: "The President arrived, escorted by twelve soldiers.",
-      translation: "병사 열두 명의 호위를 받으며 대통령이 도착했다.",
-      check: false,
-    },
-  ],
+  list: [],
 };
 
 // Action Creators
+export function loadWord(word_list) {
+  return { type: LOAD, word_list };
+}
+
 export function createWord(word) {
   return { type: CREATE, word };
 }
@@ -51,13 +38,70 @@ export function removeWord(word_id) {
   return { type: REMOVE, word_id };
 }
 
-export function checkWord(word_id) {
-  return { type: CHECK, word_id };
+export function checkWord(word_index) {
+  return { type: CHECK, word_index };
 }
+
+//middlewares
+
+export const loadWordFB = () => {
+  return async function (dispatch) {
+    const word_data = await getDocs(collection(db, "word"));
+
+    let word_list = [];
+
+    word_data.forEach((doc) => {
+      word_list.push({ ...doc.data(), id: doc.id });
+    });
+    dispatch(loadWord(word_list));
+  };
+};
+
+export const createWordFB = (word) => {
+  return async function (dispatch) {
+    const docRef = await addDoc(collection(db, "word"), { ...word });
+  };
+};
+
+export const checkWordFB = (word_id) => {
+  return async function (dispatch, getState) {
+    const word_list = getState().word.list;
+    const word_index = word_list.findIndex((b) => {
+      return b.id === word_id;
+    });
+    dispatch(checkWord(word_index));
+    const docRef = doc(db, "word", word_id);
+    await updateDoc(docRef, { check: getState().word.list[word_index].check });
+  };
+};
+
+export const removeWordFB = (word_id) => {
+  return async function (dispatch, getState) {
+    dispatch(removeWord(word_id));
+    const docRef = doc(db, "word", word_id);
+    await deleteDoc(docRef);
+  };
+};
+
+export const updateWordFB = (words) => {
+  return async function (dispatch, getState) {
+    const docRef = doc(db, "word", words.id);
+    await updateDoc(docRef, {
+      text: words.text,
+      pronunciation: words.pronunciation,
+      meaning: words.meaning,
+      example: words.example,
+      translation: words.translation,
+    });
+  };
+};
 
 // Reducer
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case "word/LOAD": {
+      return { list: action.word_list };
+    }
     case "word/CREATE": {
       const new_word_list = [...state.list, action.word];
       return { list: new_word_list };
@@ -70,9 +114,8 @@ export default function reducer(state = initialState, action = {}) {
     }
     case "word/CHECK": {
       let temp_word_list = state.list;
-      const obj = state.list.find((x) => x.id === action.word_id);
-      const index = state.list.indexOf(obj);
-      temp_word_list[index].check = !temp_word_list[index].check;
+      temp_word_list[action.word_index].check =
+        !temp_word_list[action.word_index].check;
       const new_word_list = temp_word_list;
       return { list: new_word_list };
     }

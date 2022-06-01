@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createWord } from "./redux/modules/word";
+import { createWordFB } from "./redux/modules/word";
+import { db } from "./firebase.js";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
 const Add = (props) => {
   const data = useSelector((state) => state.word.list);
@@ -17,9 +19,8 @@ const Add = (props) => {
 
   const dispatch = useDispatch();
 
-  const addWordList = () => {
+  const addWordList = async () => {
     const myInput = {
-      id: data.length === 0 ? 0 : data[data.length - 1].id + 1,
       text: textInput.current.value,
       pronunciation: pronunciationInput.current.value,
       meaning: meaningInput.current.value,
@@ -27,7 +28,9 @@ const Add = (props) => {
       translation: translationInput.current.value,
       check: false,
     };
-    dispatch(createWord(myInput));
+
+    dispatch(createWordFB(myInput));
+
     Navigate(`/`);
   };
 

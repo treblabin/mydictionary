@@ -4,14 +4,19 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { IconContext } from "react-icons";
 import { BiCheck, BiEdit, BiTrash, BiPlus, BiChevronUp } from "react-icons/bi";
-import { removeWord, checkWord } from "./redux/modules/word";
+import { removeWordFB, checkWordFB, loadWordFB } from "./redux/modules/word";
+import { db } from "./firebase.js";
+import { collection, getDocs } from "firebase/firestore";
 
 const Main = (props) => {
   const [count, setCount] = React.useState(0);
   const data = useSelector((state) => state.word.list);
   const ReversedData = data.map((datas) => datas).reverse();
-  console.log(ReversedData);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(loadWordFB());
+  }, []);
 
   return (
     <AppCover>
@@ -34,7 +39,7 @@ const Main = (props) => {
                   >
                     <BiCheck
                       onClick={() => {
-                        dispatch(checkWord(n.id));
+                        dispatch(checkWordFB(n.id));
                         setCount(count + 1);
                       }}
                     />
@@ -47,7 +52,7 @@ const Main = (props) => {
                   >
                     <BiEdit />
                   </Link>
-                  <BiTrash onClick={() => dispatch(removeWord(n.id))} />
+                  <BiTrash onClick={() => dispatch(removeWordFB(n.id))} />
                 </IconContext.Provider>
               </BtnCover>
               <TextP IsChecked={n.check}>{n.text}</TextP>

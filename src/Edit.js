@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { updateWord } from "./redux/modules/word";
+import { updateWordFB } from "./redux/modules/word";
 
 const Edit = (props) => {
   const word_index = useParams().index;
@@ -28,7 +28,7 @@ const Edit = (props) => {
       example: exampleInput.current.value,
       translation: translationInput.current.value,
     };
-    dispatch(updateWord(myInput));
+    dispatch(updateWordFB(myInput));
     Navigate(`/`);
   };
 
