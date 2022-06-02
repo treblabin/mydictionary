@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
@@ -59,9 +60,32 @@ export const loadWordFB = () => {
 
 export const createWordFB = (word) => {
   return async function (dispatch) {
-    const docRef = await addDoc(collection(db, "word"), { ...word });
+    const word_data = await getDocs(collection(db, "word"));
+    let id_list = [0];
+    word_data.forEach((doc) => {
+      const my_id = doc.id;
+      id_list.push(+my_id.split("a")[1]);
+    });
+    const this_id = Math.max(...id_list) + 1;
+    const docRef = await setDoc(doc(db, "word", `a${this_id}`), {
+      ...word,
+    });
+    dispatch(createWord(word));
   };
 };
+
+// export const createWordFB = (word) => {
+//   return async function (dispatch) {
+//     const word_data = await getDocs(collection(db, "word"));
+//     let id_list = [];
+//     word_data.forEach((doc) => {
+//       id_list.push(+doc.id);
+//     });
+//     const docRef = await addDoc(collection(db, "word", Math.max(id_list) + 1), {
+//       ...word,
+//     });
+//   };
+// };
 
 export const checkWordFB = (word_id) => {
   return async function (dispatch, getState) {
@@ -93,6 +117,7 @@ export const updateWordFB = (words) => {
       example: words.example,
       translation: words.translation,
     });
+    dispatch(updateWord(words));
   };
 };
 
@@ -108,7 +133,7 @@ export default function reducer(state = initialState, action = {}) {
     }
     case "word/REMOVE": {
       const new_word_list = state.list.filter((l) => {
-        return l.id != action.word_id;
+        return l.id !== action.word_id;
       });
       return { list: new_word_list };
     }
