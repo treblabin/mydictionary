@@ -28,8 +28,8 @@ const Edit = (props) => {
       example: exampleInput.current.value,
       translation: translationInput.current.value,
     };
+    Navigate(-1);
     dispatch(updateWordFB(myInput));
-    Navigate(`/`);
   };
 
   return (

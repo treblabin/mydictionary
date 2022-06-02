@@ -17,8 +17,10 @@ const CREATE = "word/CREATE";
 const UPDATE = "word/UPDATE";
 const REMOVE = "word/REMOVE";
 const CHECK = "word/CHECK";
+const COUNTER = "word/COUNTER";
 
 const initialState = {
+  count: 0,
   list: [],
 };
 
@@ -41,6 +43,10 @@ export function removeWord(word_id) {
 
 export function checkWord(word_index) {
   return { type: CHECK, word_index };
+}
+
+export function counter(count) {
+  return { type: COUNTER, count };
 }
 
 //middlewares
@@ -118,6 +124,7 @@ export const updateWordFB = (words) => {
       translation: words.translation,
     });
     dispatch(updateWord(words));
+    dispatch(counter(0));
   };
 };
 
@@ -155,6 +162,10 @@ export default function reducer(state = initialState, action = {}) {
       temp_word_list[index].translation = action.word.translation;
       const new_word_list = temp_word_list;
       return { list: new_word_list };
+    }
+    case "word/COUNTER": {
+      const new_count = state.count + 1;
+      return { count: new_count };
     }
     // do reducer stuff
     default:

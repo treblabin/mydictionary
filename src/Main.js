@@ -10,6 +10,7 @@ import { collection, getDocs } from "firebase/firestore";
 
 const Main = (props) => {
   const [count, setCount] = React.useState(0);
+  const editCounter = useSelector((state) => state.word.count);
   const data = useSelector((state) => state.word.list);
   const ReversedData = data.map((datas) => datas).reverse();
   const dispatch = useDispatch();
